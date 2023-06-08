@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@200;300;400;500;600;700;800;900&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <link rel="stylesheet" href="css/theme.style.css" />
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+  </head>
+
+  <body>
+    <div class="intro">
+      <div class="background-orange"></div>
+      <div class="background-green"></div>
+      <!-- <div class="background-emblem"></div> -->
+      <div class="uk-text-center uk-align-center uk-padding">
+        <div id="screenshot" style="margin: auto; text-align: left">
+          <div>
+            <h2 class="uk-text-center">
+              After clicking on start voting , you get 15 seconds to vote.
+            </h2>
+            <div class="uk-flex-center uk-text-center">
+              <button class="capture-button uk-button uk-button-primary">
+                Give camera permissions
+              </button>
+              <button
+                id="screenshot-button"
+                class="uk-button uk-button-primary"
+              >
+                start voting
+              </button>
+            </div>
+          </div>
+          <div class="uk-text-center uk-flex-center">
+            <video autoplay class="cam"></video>
+            <img class="uk-hidden" src="" />
+            <canvas style="display: none"></canvas>
+          </div>
+        </div>
+      </div>
+      <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"
+      ></script>
+      <script>
+        const constraints = {
+          video: { width: 640, height: 480 },
+        };
+        const capturevideobutton = document.querySelector(
+          "#screenshot .capture-button"
+        );
+        const screenshotbutton = document.querySelector("#screenshot-button");
+        const img = document.querySelector("#screenshot img");
+        const video = document.querySelector("#screenshot video");
+        const canvas = document.createElement("canvas");
+        capturevideobutton.onclick = function () {
+          capturevideobutton.style.display = "none";
+          navigator.mediaDevices
+            .getUserMedia(constraints)
+            .then(handlesuccess)
+            .catch(handlerror);
+        };
+        var i = 1;
+        var flag = 0;
+        screenshotbutton.onclick = function () {
+          screenshotbutton.style.display = "none";
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          canvas.getContext("2d").drawImage(video, 0, 0);
+          img.src = canvas.toDataURL("image/jpeg");
+          var imgurl = canvas.toDataURL("image/jpeg");
+          $.ajax({
+            type: "POST",
+            url: "https://lyproject.herokuapp.com/getimage",
+            data: { sentimg: imgurl },
+            success: function (response) {
+              if (response.code == "200") {
+                console.log("image uploaded successfully");
+              } else {
+                window.alert("image upload unsuccessful");
+              }
+            },
+            dataType: "json",
+          });
+          if (i < 30) {
+            setTimeout(function () {
+              screenshotbutton.click();
+            }, 500);
+            console.log(i);
+            i++;
+          }
+          if (i == 30 && flag == 0) {
+            setTimeout(() => {
+              $.ajax({
+                method: "post",
+                url: "/deletefolder",
+              });
+            }, 20000);
+            flag = 1;
+          }
+        };
+        function handlesuccess(stream) {
+          screenshotbutton.disabled = false;
+          video.srcObject = stream;
+        }
+        function handlerror(error) {
+          console.error(error);
+        }
+      </script>
+    </div>
+  </body>
+</html>

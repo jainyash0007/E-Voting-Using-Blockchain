@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+      integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+      crossorigin="anonymous"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@200;300;400;500;600;700;800;900&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/uikit.min.css" />
+    <link rel="stylesheet" href="css/theme.style.css" />
+
+    <script src="js/uikit.min.js"></script>
+    <script src="js/uikit-icons.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-app.js"></script>
+
+    <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-analytics.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-firestore.js"></script>
+
+    <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyD-FnFVeV1gBTrupiS2AA2Xebet3_mEWpg",
+        authDomain: "ly-project-bbff5.firebaseapp.com",
+        databaseURL: "https://ly-project-bbff5.firebaseio.com",
+        projectId: "ly-project-bbff5",
+        storageBucket: "ly-project-bbff5.appspot.com",
+        messagingSenderId: "172678595732",
+        appId: "1:172678595732:web:6b816296b52423249d2081",
+        measurementId: "G-Z7EWE4JQ5D"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+  </head>
+
+  <body>
+    <div class="background-orange"></div>
+    <div class="background-green"></div>
+    <div class="background-emblem"></div>
+    <div
+      class="middle-box text-center loginscreen uk-text-center uk-padding form"
+    >
+      <div>
+        <h3>Verify Aadhaar</h3>
+        <div class="m-t" id="verify_otp_model" role="form" action="#">
+          <div class="form-group">
+            <input
+              onkeypress="return isNumberKey(event)"
+              id="verify_otp"
+              name="aadhaarno"
+              class="uk-input"
+              placeholder="Enter OTP"
+              required
+              autofocus
+            />
+          </div>
+
+          <button id="verifyotp" class="uk-button uk-button-primary uk-margin">
+            Verify OTP
+          </button>
+        </div>
+
+        <div class="m-t" id="enter_aadhaarno" role="form" action="#">
+          <div class="form-group">
+            <input
+              onkeypress="return isNumberKey(event)"
+              id="aadhaar_no"
+              name="aadharno"
+              class="uk-input"
+              placeholder="Aadhaar No"
+              required
+              autofocus
+            />
+          </div>
+
+          <button id="getotp" class="uk-button uk-button-primary uk-margin">
+            Get OTP
+          </button>
+        </div>
+        <br />
+        <div id="errorbox" class="alert alert-danger fade in">
+          <a href="#" class="close" data-dismiss="alert">&times;</a>
+          <strong id="error">Error!</strong>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      function isNumberKey(evt) {
+        var charCode = evt.which ? evt.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
+        return true;
+      }
+
+      $("#verify_otp_model").hide();
+      $("#errorbox").hide();
+
+      // phone auth
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("getotp", {
+        size: "invisible",
+        callback: function (response) {},
+      });
+      // [END appVerifier]
+
+      recaptchaVerifier.render().then(function (widgetId) {
+        window.recaptchaWidgetId = widgetId;
+        //  updateSignInButtonUI();
+      });
+      var GLOBALno = "";
+      function onSignInSubmit() {
+        window.signingIn = true;
+        $("#errorbox").hide();
+        // updateSignInButtonUI();
+        // var phoneNumber = "+91" + aadhaar_no_phone_no[$('#aadhaar_no').val()];
+        var d = new Date();
+        d.setTime(d.getTime() + 5 * 60 * 1000);
+        var expires = "expires=" + d.toUTCString();
+        document.cookie =
+          "aadhaar" + "=" + $("#aadhaar_no").val() + ";" + expires + ";path=/";
+
+        // $('#verifyc').text('Enter verification code send to ' + phoneNumber)]
+        var appVerifier = window.recaptchaVerifier;
+        firebase
+          .auth()
+          .signInWithPhoneNumber(GLOBALno, appVerifier)
+          .then(function (confirmationResult) {
+            window.confirmationResult = confirmationResult;
+            window.signingIn = false;
+            $("#enter_aadhaarno").hide();
+            $("#verify_otp_model").show();
+            console.log("otp");
+          })
+          .catch(function (error) {
+            window.alert("error\n\n" + error);
+            console.log(err);
+            window.signingIn = false;
+            $(".verification-code-form").hide();
+          });
+      }
+      // Phone auth end //
+
+      $(verifyotp).click(function () {
+        var code = $("#verify_otp").val();
+        confirmationResult
+          .confirm(code)
+          .then(function (result) {
+            // User signed in successfully.
+            var user = result.user;
+            window.verifyingCode = false;
+            //login success
+            console.log(user.uid);
+            var d = new Date();
+            d.setTime(d.getTime() + 5 * 60 * 1000);
+            var expires = "expires=" + d.toUTCString();
+            document.cookie =
+              "show" + "=" + user.uid + ";" + expires + ";path=/";
+            window.location = "/monitoring";
+          })
+          .catch(function (error) {
+            // User couldn't sign in (bad verification code?)
+            console.error("Error while checking the verification code", error);
+            window.alert(
+              "Error while checking the verification code:\n\n" +
+                error.code +
+                "\n\n" +
+                error.message
+            );
+            window.verifyingCode = false;
+            $("#errorbox").show();
+            $("#error").text("Enter valid OTP");
+          });
+      });
+      $(getotp).click(function (e) {
+        if ($("#aadhaar_no").val() == "") {
+          $("#errorbox").show();
+          $("#error").text("Please Enter Aadhaar No");
+        } else {
+          $("#errorbox").hide();
+          var no = $("#aadhaar_no").val();
+          $.ajax({
+            type: "POST",
+            url: "/getphoneno",
+            data: { aadharno: no },
+            success: function (response) {
+              // console.log(response.phoneno);
+              if (response.phoneno == "age less") {
+                window.alert("you should be more than 18");
+              } else if (response.phoneno) {
+                GLOBALno = "+91" + response.phoneno;
+                onSignInSubmit();
+                // console.log(GLOBALno);
+              } else {
+                window.alert("Wrong aadhar no");
+              }
+            },
+            dataType: "json",
+          });
+
+          $("#errorbox").hide();
+        }
+      });
+    </script>
+  </body>
+</html>
