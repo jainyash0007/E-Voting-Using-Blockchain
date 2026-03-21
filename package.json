@@ -4,10 +4,10 @@
   "description": "ly-project",
   "main": "app.js",
   "dependencies": {
-    "axios": "^0.30.2",
+    "axios": "^0.30.3",
     "ba64": "^3.0.9",
     "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.5",
+    "cookie-parser": "^1.4.7",
     "del": "^6.0.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.10",
