@@ -16,7 +16,7 @@
     "express-session": "^1.19.0",
     "fs-extra": "^9.0.1",
     "mongoose": "^9.3.1",
-    "node-webcam": "^0.6.4",
+    "node-webcam": "^0.8.2",
     "nodemon": "^3.1.4",
     "ringcaptcha-nodejs": "0.0.3",
     "sendotp": "^1.2.9"
