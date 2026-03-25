@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.30.3",
     "ba64": "^3.0.9",
-    "body-parser": "^1.20.2",
+    "body-parser": "^2.2.2",
     "cookie-parser": "^1.4.7",
     "del": "^6.0.0",
     "dotenv": "^17.3.1",
