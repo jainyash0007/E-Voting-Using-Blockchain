@@ -4,7 +4,7 @@
   "description": "ly-project",
   "main": "app.js",
   "dependencies": {
-    "axios": "^0.30.3",
+    "axios": "^1.15.0",
     "ba64": "^3.0.9",
     "body-parser": "^2.2.2",
     "cookie-parser": "^1.4.7",
